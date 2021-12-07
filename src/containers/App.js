@@ -5,6 +5,7 @@ import abi from '../utils/WavePortal.json';
 import './App.css';
 import Introduction from '../components/Introduction';
 import Button from '../components/Button';
+import WaveList from './WaveList';
 
 
 
@@ -15,7 +16,8 @@ class App extends React.Component {
     ethereum: null,
     account: null,
     contractAddress: '0x75B3837a0Cd77F07744a2d23B8E02a979cAF99e0',
-    contractABI: abi.abi
+    contractABI: abi.abi,
+    waveDetails: {}
   };
 
   checkIfWalletIsConnected = async() => {
@@ -56,6 +58,8 @@ class App extends React.Component {
     let isConnect = await this.checkIfWalletIsConnected();
     console.log("isConnect: " + isConnect);
     this.setState({isConnected: isConnect});
+
+    await this.waveList();
   }
 
   wave = async() => {
@@ -98,12 +102,53 @@ class App extends React.Component {
 
   }
 
+  waveList = async() => {
+    console.log("inside waveList");
+    var addressWaveList = {
+      data : []
+    }
+    let {ethereum, contractAddress, contractABI} = this.state;
+    try{
+
+      if(ethereum){
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const waveContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        const addresses = await waveContract.getAllAddresses();
+
+        addresses.map(async(address) => {
+          var waveCount = await waveContract.getWaves(address);
+          addressWaveList.data.push({
+            "address" : address,
+            "waveCount": waveCount
+          });
+        });
+
+        console.log(addressWaveList);
+        this.setState({waveDetails: addressWaveList});
+      }
+      else{
+        console.log("Wallet is not connected!");
+      }
+
+    }catch(error){
+      console.log(error);
+    }
+
+  }
+
+  componentDidUpdate(pP, pS, sS){
+    
+  }
+
   render(){
 
     return (
       <div className="App">
         <Introduction isWalletConnected={this.state.isConnected} onClick={this.connectToWallet}/>
         <Button text={'Wave 👋 at me!'} onClick={this.wave}/>
+        <WaveList />
       </div>
     );
   }
