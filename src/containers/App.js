@@ -1,7 +1,11 @@
 import React from 'react';
+import { ethers } from 'ethers';
+import abi from '../utils/WavePortal.json';
+
 import './App.css';
 import Introduction from '../components/Introduction';
 import Button from '../components/Button';
+
 
 
 class App extends React.Component {
@@ -9,7 +13,9 @@ class App extends React.Component {
   state = {
     isConnected: false,
     ethereum: null,
-    account: null
+    account: null,
+    contractAddress: '0x75B3837a0Cd77F07744a2d23B8E02a979cAF99e0',
+    contractABI: abi.abi
   };
 
   checkIfWalletIsConnected = async() => {
@@ -52,8 +58,44 @@ class App extends React.Component {
     this.setState({isConnected: isConnect});
   }
 
-  wave = () => {
+  wave = async() => {
     console.log("wave clicked!");
+
+    let {ethereum, contractAddress, contractABI} = this.state;
+
+    try{
+      if(ethereum){
+        const provider = new ethers.providers.Web3Provider(ethereum);
+        const signer = provider.getSigner();
+        const wavePortalContract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        let count = await wavePortalContract.getTotalWaves();
+        console.log("Total waves: %d", count.toNumber() );
+
+        /*
+          Executing wave function from the contract
+        */
+
+        const waveTxn = await wavePortalContract.wave();
+        console.log("waveTxn: " + waveTxn);
+        console.log("Mining.... " + waveTxn.hash);
+        
+        await waveTxn.wait();
+        console.log("Mined-- " + waveTxn.hash);
+
+        count = await wavePortalContract.getTotalWaves();
+        console.log("Total waves: %d", count.toNumber() );
+          
+      }
+      else{
+        console.log("ethereum wallet is not connected.")
+      }
+    }
+    catch(error){
+      console.log(error);
+    }
+
+
   }
 
   render(){
