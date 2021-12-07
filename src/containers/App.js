@@ -32,7 +32,7 @@ class App extends React.Component {
   }
 
   connectToWallet = async() => {
-    let accounts = await this.state.ethereum.request({method: 'eth_accounts'});
+    let accounts = await this.state.ethereum.request({method: 'eth_requestAccounts'});
 
       if(accounts.length !== 0){
         const account = accounts[0];
