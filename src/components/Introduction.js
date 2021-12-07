@@ -3,6 +3,11 @@ import Button from "./Button";
 import "tachyons";
 
 class Introduction extends React.Component{
+    connectWalletButton(props){
+        if(!this.props.isConnected){
+            return <Button text={'Connect your wallet'} onClick={props.onClick}/>
+        }
+    }
     render(){
         return(
             <header className="tc ph4">
@@ -13,7 +18,9 @@ class Introduction extends React.Component{
                     <h2 className="f5 w-30 f4-m f3-l fw2 black-50 mt0 lh-copy">
                         I am Sourabh! I am a Software Developer.
                     </h2>
-                    <Button text={'Connect your wallet'}/>
+                    {
+                        this.connectWalletButton(this.props)  
+                    }
                 </div>
             </header>
         );
@@ -21,3 +28,4 @@ class Introduction extends React.Component{
 }
 
 export default Introduction;
+
