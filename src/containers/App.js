@@ -22,8 +22,8 @@ class App extends React.Component {
       contractABI: abi.abi,
       waveDetails: [
         {
-          address : "0xB27d536976B9869309F665e01cFB28ebED580774",
-          wave : 2
+          address : "",
+          wave : null
         }
       ]
     };
