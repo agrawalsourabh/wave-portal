@@ -19,7 +19,7 @@ class App extends React.Component {
       isConnected: false,
       ethereum: null,
       account: null,
-      contractAddress: '0xd64148cbdaAa9dD0a45B8bAdFBfbBe87A9dbc522',
+      contractAddress: '0x7D7C477e12c91550b936f851440511777817083b',
       contractABI: abi.abi,
       waveDetails: [
         {
