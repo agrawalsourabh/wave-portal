@@ -5,6 +5,7 @@ import abi from '../utils/WavePortal.json';
 import './App.css';
 import Introduction from '../components/Introduction';
 import Button from '../components/Button';
+import ProgressBar from './ProgressBar'
 import WaveList from './WaveList';
 
 
@@ -25,7 +26,9 @@ class App extends React.Component {
           address : "",
           wave : null
         }
-      ]
+      ],
+      progressPer: 60,
+      progressVis: false
     };
   }
 
@@ -94,14 +97,16 @@ class App extends React.Component {
         const waveTxn = await wavePortalContract.wave();
         console.log("waveTxn: " + waveTxn);
         console.log("Mining.... " + waveTxn.hash);
-        
+        this.setState({progressVis: true});
         await waveTxn.wait();
+
         console.log("Mined-- " + waveTxn.hash);
 
         count = await wavePortalContract.getTotalWaves();
         console.log("Total waves: %d", count.toNumber() );
 
         await this.waveList();
+        this.setState({progressVis: false});
           
       }
       else{
@@ -164,6 +169,7 @@ class App extends React.Component {
       <div className="App">
         <Introduction isWalletConnected={this.state.isConnected} onClick={this.connectToWallet}/>
         <Button text={'Wave 👋 at me!'} onClick={this.wave}/>
+        <ProgressBar progressBarVis={this.state.progressVis} progressBarPer={this.state.progressPer}/>
         <WaveList waveDetails={this.state.waveDetails}/>
       </div>
     );
