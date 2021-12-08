@@ -11,14 +11,25 @@ import WaveList from './WaveList';
 
 class App extends React.Component {
 
-  state = {
-    isConnected: false,
-    ethereum: null,
-    account: null,
-    contractAddress: '0x75B3837a0Cd77F07744a2d23B8E02a979cAF99e0',
-    contractABI: abi.abi,
-    waveDetails: {}
-  };
+  constructor(props){
+    super(props);
+
+    this.state = {
+      isConnected: false,
+      ethereum: null,
+      account: null,
+      contractAddress: '0x75B3837a0Cd77F07744a2d23B8E02a979cAF99e0',
+      contractABI: abi.abi,
+      waveDetails: [
+        {
+          address : "0xB27d536976B9869309F665e01cFB28ebED580774",
+          wave : 2
+        }
+      ]
+    };
+  }
+
+  
 
   checkIfWalletIsConnected = async() => {
 
@@ -89,6 +100,8 @@ class App extends React.Component {
 
         count = await wavePortalContract.getTotalWaves();
         console.log("Total waves: %d", count.toNumber() );
+
+        await this.waveList();
           
       }
       else{
@@ -104,9 +117,7 @@ class App extends React.Component {
 
   waveList = async() => {
     console.log("inside waveList");
-    var addressWaveList = {
-      data : []
-    }
+    var addressWaveList = [];
     let {ethereum, contractAddress, contractABI} = this.state;
     try{
 
@@ -117,15 +128,18 @@ class App extends React.Component {
 
         const addresses = await waveContract.getAllAddresses();
 
-        addresses.map(async(address) => {
-          var waveCount = await waveContract.getWaves(address);
-          addressWaveList.data.push({
-            "address" : address,
-            "waveCount": waveCount
-          });
-        });
+        console.log("address length: " + addresses.length);
 
-        console.log(addressWaveList);
+        for (let i = 0; i < addresses.length; i++) {
+          const address = addresses[i];
+          const waveCount = await waveContract.getWaves(address);
+
+          addressWaveList.push({
+            "address" : address,
+            "waveCount" : waveCount.toNumber()
+          });
+        }
+
         this.setState({waveDetails: addressWaveList});
       }
       else{
@@ -139,16 +153,18 @@ class App extends React.Component {
   }
 
   componentDidUpdate(pP, pS, sS){
+    if(pS.waveDetails !== this.state.waveDetails){
+      console.log("wave details updated");
+    }
     
   }
 
   render(){
-
     return (
       <div className="App">
         <Introduction isWalletConnected={this.state.isConnected} onClick={this.connectToWallet}/>
         <Button text={'Wave 👋 at me!'} onClick={this.wave}/>
-        <WaveList />
+        <WaveList waveDetails={this.state.waveDetails}/>
       </div>
     );
   }
