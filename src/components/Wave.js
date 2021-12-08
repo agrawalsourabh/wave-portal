@@ -4,9 +4,10 @@ class Wave extends React.Component{
     render(){
         const {waveCount, address} = this.props.waveDetail;
         return(
-            <div className='flex'>
-                <p className="fw6 tl pa3 bg-white">address: {address}</p>
-                <p className="fw6 tl pa3 bg-white">wave: {waveCount} </p>
+            <div className='flex justify-center'>
+                
+                <p className="pa3 w-50 bb b--black-20">{address}</p>
+                <p className="pa3 w-50 bb b--black-20 ">{waveCount} 👋</p>
             </div>
         );
     }
